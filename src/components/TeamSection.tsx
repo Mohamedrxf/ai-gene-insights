@@ -2,25 +2,25 @@
 const TeamSection = () => {
   const teamMembers = [
     {
-      name: "Mr MRK",
+      name: "purushoth",
       role: "Lead Geneticist",
       description: "PhD in Molecular Biology with 15+ years in genomics research",
       emoji: "👨‍⚕️"
     },
     {
-      name: "samvirtha",
+      name: "Mohamed rafeeq khan A",
       role: "AI Research Director",
       description: "Machine Learning expert specializing in healthcare applications",
       emoji: "👨‍💻"
     },
     {
-      name: "madagascar",
+      name: "raja samvirtha",
       role: "Bioinformatics Lead",
       description: "Expert in computational biology and genetic data analysis",
       emoji: "👩‍💼"
     },
     {
-      name: "purus",
+      name: "rishi sai",
       role: "Medical Advisor",
       description: "Clinical researcher with expertise in personalized medicine",
       emoji: "👨‍🔬"
