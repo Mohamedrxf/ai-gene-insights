@@ -1,3 +1,4 @@
+import Chatbot from "../components/Chatbot";
 
 const Index = () => {
   return (
@@ -271,6 +272,9 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Chatbot Component */}
+      <Chatbot />
     </div>
   );
 };
