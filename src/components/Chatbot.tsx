@@ -1,23 +1,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Brain, Dna } from 'lucide-react';
-import { GeneticAIService, ChatMessage } from '../services/geneticAI';
+import { Bot, X, Send, Dna } from 'lucide-react';
+import { GeneBotService, GeneMessage } from '../services/geneBot';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = useState<GeneMessage[]>([
     {
       id: '1',
-      text: "Hello! I'm your advanced AI assistant for genetic analysis and disease prediction. I can help you understand gene interactions, genetic disorders, and personalized health insights. What would you like to explore today?",
+      text: "Hello! I'm your Gene Assistant. Ask me anything about genes, DNA, genetic disorders, inheritance, mutations, or genetic testing. What would you like to know about genetics?",
       isBot: true,
-      timestamp: new Date(),
-      mood: 'curious',
-      intent: 'education'
+      timestamp: new Date()
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [aiService] = useState(new GeneticAIService());
+  const [geneBot] = useState(new GeneBotService());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -36,61 +34,40 @@ const Chatbot = () => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    const mood = aiService.detectMood(inputMessage);
-    const intent = aiService.detectIntent(inputMessage);
-
     // Add user message
-    const userMessage: ChatMessage = {
+    const userMessage: GeneMessage = {
       id: Date.now().toString(),
       text: inputMessage,
       isBot: false,
-      timestamp: new Date(),
-      mood,
-      intent
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
 
-    // Generate AI response
+    // Generate bot response
     setTimeout(() => {
-      const response = aiService.getContextualResponse(inputMessage);
-      const botMessage: ChatMessage = {
+      const response = geneBot.getGeneResponse(inputMessage);
+      const botMessage: GeneMessage = {
         id: (Date.now() + 1).toString(),
-        text: response.text,
+        text: response,
         isBot: true,
-        timestamp: new Date(),
-        mood,
-        intent,
-        multimedia: response.multimedia
+        timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
-    }, 1500);
-  };
-
-  const getMoodIcon = (mood?: string) => {
-    switch (mood) {
-      case 'academic': return '🎓';
-      case 'concerned': return '💙';
-      case 'curious': return '🤔';
-      case 'casual': return '😊';
-      default: return '🧬';
-    }
+    }, 1000);
   };
 
   const clearChat = () => {
     setMessages([{
       id: '1',
-      text: "Chat cleared! I'm ready to help you with any genetic analysis questions.",
+      text: "Chat cleared! Ask me anything about genes, DNA, genetic disorders, or genetics in general.",
       isBot: true,
-      timestamp: new Date(),
-      mood: 'curious',
-      intent: 'education'
+      timestamp: new Date()
     }]);
-    aiService.resetContext();
   };
 
   return (
@@ -98,16 +75,12 @@ const Chatbot = () => {
       {/* Chat Toggle Button */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center group"
-        style={{ backgroundColor: '#4cd137' }}
+        className="fixed bottom-6 right-6 w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center"
       >
         {isOpen ? (
           <X className="w-7 h-7 text-white" />
         ) : (
-          <div className="relative">
-            <Brain className="w-7 h-7 text-white" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
+          <Dna className="w-7 h-7 text-white" />
         )}
       </button>
 
@@ -115,16 +88,13 @@ const Chatbot = () => {
       {isOpen && (
         <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col border border-gray-200 overflow-hidden">
           {/* Chat Header */}
-          <div className="p-4 rounded-t-2xl text-white relative" style={{ backgroundColor: '#4cd137' }}>
+          <div className="p-4 bg-blue-600 rounded-t-2xl text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <Dna className="w-7 h-7" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-300 rounded-full animate-pulse"></div>
-                </div>
+                <Dna className="w-6 h-6" />
                 <div>
-                  <h3 className="font-bold text-lg">GeneAI Assistant</h3>
-                  <p className="text-xs opacity-90">Advanced Genetic Analysis AI</p>
+                  <h3 className="font-bold text-lg">Gene Assistant</h3>
+                  <p className="text-xs opacity-90">Ask me about genetics!</p>
                 </div>
               </div>
               <button
@@ -143,13 +113,11 @@ const Chatbot = () => {
                 key={message.id}
                 className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
               >
-                <div className={`max-w-[85%] ${message.isBot ? 'order-2' : ''}`}>
+                <div className={`max-w-[85%]`}>
                   {message.isBot && (
                     <div className="flex items-center space-x-2 mb-1">
-                      <Bot className="w-4 h-4 text-green-600" />
-                      <span className="text-xs text-gray-500">
-                        AI • {getMoodIcon(message.mood)}
-                      </span>
+                      <Bot className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs text-gray-500">Gene Bot</span>
                     </div>
                   )}
                   
@@ -157,30 +125,11 @@ const Chatbot = () => {
                     className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                       message.isBot
                         ? 'bg-white text-gray-800 shadow-sm border border-gray-100'
-                        : 'text-white shadow-sm'
+                        : 'bg-blue-600 text-white shadow-sm'
                     }`}
-                    style={!message.isBot ? { backgroundColor: '#4cd137' } : {}}
                   >
                     {message.text}
-                    
-                    {/* Multimedia content */}
-                    {message.multimedia && (
-                      <div className="mt-3 rounded-lg overflow-hidden">
-                        <img
-                          src={message.multimedia.src}
-                          alt={message.multimedia.alt}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">{message.multimedia.alt}</p>
-                      </div>
-                    )}
                   </div>
-                  
-                  {!message.isBot && (
-                    <div className="text-xs text-gray-500 mt-1 text-right">
-                      {getMoodIcon(message.mood)} {message.intent}
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
@@ -208,21 +157,20 @@ const Chatbot = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask about genes, interactions, diseases..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 text-sm transition-all"
+                placeholder="Ask about genes, DNA, genetics..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm transition-all"
                 disabled={isTyping}
               />
               <button
                 type="submit"
                 disabled={isTyping || !inputMessage.trim()}
-                className="px-4 py-3 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[50px]"
-                style={{ backgroundColor: '#4cd137' }}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[50px]"
               >
                 <Send className="w-4 h-4" />
               </button>
             </div>
             <div className="mt-2 text-xs text-gray-500 text-center">
-              🧬 Powered by Advanced Genetic AI • Context-Aware Responses
+              🧬 Specialized in Gene & Genetics Questions
             </div>
           </form>
         </div>
